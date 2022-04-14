@@ -1,0 +1,10 @@
+SOURCES: 
+https://imagej.net/scripting/matlab
+https://www.mathworks.com/matlabcentral/fileexchange/47545-mij-running-imagej-and-fiji-within-matlab
+https://www.mathworks.com/help/images/detecting-a-cell-using-image-segmentation.html
+https://www.mathworks.com/help/images/correcting-nonuniform-illumination.html
+
+http://bigwww.epfl.ch/sage/soft/mij/ <-- mij.jar and ij.jar packages
+Note: Must have extension packages in MATLAB java directory*
+
+Additional readings:
