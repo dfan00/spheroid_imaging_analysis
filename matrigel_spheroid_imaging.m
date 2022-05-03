@@ -6,32 +6,50 @@ clear all
 
 tic;
 
-filename='Captured6.tif';
+filename='Imm 111-343 Peri_well1_24hrs_082521.jpg';
 im_mat=imread(filename); %extract image
 image(im_mat); %print original image
 
 javaaddpath 'C:\Program Files\MATLAB\R2022a\java\mij.jar' %extend java classpath to mij.jar
 javaaddpath 'C:\Program Files\MATLAB\R2022a\java\ij.jar' %extend java classpath to ij.jar 
-%MIJ.start; %open ImageJ
+%MIJ.start; %open ImageJ environment
+
+se=strel('disk',15); %separate spheroids from the background
+background=imopen(im_mat,se);
+imshow(background);
+I2=im_mat-background; %isolate spheroids from the background
+figure;
+imshow(I2);
+title('no noise image');
+
+user_input=input("enter name for image (formatting 'filename.imagetype': "); %formatting needs to be "filename.type" for userinput
+imwrite(I2, user_input, 'tif'); %write MATLAB image file to a .tif
 
 IJ=ij.IJ;
 ij.ImageJ();
-ips=IJ.openImage('C:\Users\dalia\OneDrive\Documents\MATLAB\Captured6.tif') %call image
+str='C:\Users\dalia\OneDrive\Documents\MATLAB\';
+im_str=strcat(str, user_input);
+ips=IJ.openImage(im_str); %call image
 ips.show; %show image
 MIJ.run("8-bit"); %using ImageJ to convert RGB image to 8-bit
 MIJ.run("Sharpen"); %using ImageJ to sharpen image
 MIJ.run("Threshold"); %%using ImageJ threshold function
+MIJ.run("Sharpen");
+MIJ.run("Find Edges");
+MIJ.run("Despeckle");
+MIJ.run("Watershed");
+
 
 I=MIJ.getCurrentImage;
 E=imadjust(wiener2(im2double(I(:,:,1))));
 MIJ.createImage('result', E, true); %return output from ImageJ to MATLAB space
-MIJ.closeAllWindows(); %click "don't save" to exit ImageJ app
+MIJ.closeAllWindows();
 
 E=imsharpen(E);
 bw=imbinarize(E, 'adaptive','ForegroundPolarity','dark','Sensitivity',0.4); %binarize 8-bit image
 
 %bw=imcomplement(bw);
-bw=bwareaopen(bw,1000); %filter out small objects that will contribute to noise
+bw=bwareaopen(bw,100); %filter out small objects that will contribute to noise
 
 BWoutline=bwperim(bw); %edge detection
 Segout=im_mat; 
@@ -41,7 +59,7 @@ imshow(Segout)
 title('circle overlay');
 hold on %overlay outline on original image
 
-bw2=bwpropfilt(bw,'Area', [3500 25000], 26); %noise filter that is selective based on area and connectivity
+bw2=bwpropfilt(bw,'Area', [1500 25000], 26); %noise filter that is selective based on area and connectivity
 %bw_2=bwareaopen(bw2,1000);
 
 s=regionprops(bw2,I,{'Centroid','WeightedCentroid', 'MajorAxisLength', 'MinorAxisLength', 'Orientation', 'Area', 'Circularity'}); %get data from bw2
@@ -83,6 +101,6 @@ toc;
 %filename = 'spheroid_data.xlsx';
 %writetable(stats,filename,'Sheet','MyNewSheet','WriteVariableNames',false); %write data to excel file
 
-
+% MIJ.exit();
 
 
