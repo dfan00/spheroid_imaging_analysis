@@ -1,4 +1,4 @@
-%SPHEROID IMAGING ANALYSIS - V1
+% MATRIGEL SPHEROID IMAGING ANALYSIS - V1
 %http://bigwww.epfl.ch/sage/soft/mij/ <-- mij.jar and ij.jar packages
 
 clc
@@ -37,8 +37,7 @@ MIJ.run("Threshold"); %%using ImageJ threshold function
 MIJ.run("Sharpen");
 MIJ.run("Find Edges");
 MIJ.run("Despeckle");
-MIJ.run("Watershed");
-
+%MIJ.run("Watershed");
 
 I=MIJ.getCurrentImage;
 E=imadjust(wiener2(im2double(I(:,:,1))));
